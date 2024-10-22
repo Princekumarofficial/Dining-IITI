@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "Dining-IITI",
+    "slug": "Dining-IITI",
+    "scheme": "Dining-IITI",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./app/assets/images/iiti-logo.jpg",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./app/assets/images/iiti-logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./app/assets/images/iiti-logo.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.iiti.diningiiti"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./app/assets/images/iiti-logo.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./app/assets/fonts/DMSans.ttf",
+            "./app/assets/fonts/DMSansItalic.ttf"
+          ]
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
