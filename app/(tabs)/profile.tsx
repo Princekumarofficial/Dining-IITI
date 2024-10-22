@@ -52,7 +52,7 @@ const Profile = () => {
       {/* Profile Header */}
       <View className="items-center bg-white shadow-md rounded-b-3xl pb-8">
         <Image
-          source={require("@/app/assets/images/iiti-logo.jpg")} // Replace with user's image URL
+          source={require("@/app/assets/images/iiti-logo.png")}
           className="w-32 h-32 rounded-full mt-10"
         />
         <StyledText className="font-bold text-2xl mt-4">
