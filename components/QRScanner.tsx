@@ -115,8 +115,8 @@ const QRScanner: React.FC = () => {
 
       {status && (
         <View className="absolute bottom-20 left-0 right-0 px-4 z-40">
-          <View className="bg-white p-4 rounded-lg">
-            <Text className="text-black text-lg font-semibold">
+          <View className={`bg-white p-4 rounded-lg ${status == "Successful" ? "bg-green-50" : "bg-red-50"}`}>
+            <Text className={`text-black text-lg font-semibold ${status == "Successful" ? "text-green-700" : "text-red-700"}`}>
               Status: {status}
             </Text>
           </View>

@@ -8,7 +8,7 @@ const Logs = () => {
   return (
     <SafeAreaView>
       <FlatList
-        data={logs}
+        data={logs.reverse()}
         keyExtractor={(item) => item.id!.toString()}
         renderItem={({ item }) => (
           <View
