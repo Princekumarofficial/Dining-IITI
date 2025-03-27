@@ -1,5 +1,6 @@
 import qs from "qs";
 import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BACKEND } from "@/constants/config";
 
 export const BASE_URL = `${API_BACKEND}/api/v1`;
@@ -15,6 +16,16 @@ interface ApiCallOptions {
   recieveResponse?: boolean;
 }
 
+const getAccessToken = async (): Promise<string | null> => {
+  if (typeof document !== "undefined") {
+    // Web environment
+    return await AsyncStorage.getItem("accessToken");
+  } else {
+    // Mobile environment
+    return await SecureStore.getItemAsync("accessToken");
+  }
+};
+
 export const apiCall = async (
   path: string,
   {
@@ -28,7 +39,7 @@ export const apiCall = async (
     recieveResponse = true,
   }: ApiCallOptions = {}
 ) => {
-  const accessToken = await SecureStore.getItemAsync("accessToken");
+  const accessToken = await getAccessToken();
 
   let requestUrl = `${BASE_URL}${path}/`;
 
@@ -38,8 +49,7 @@ export const apiCall = async (
 
   if ((method === "POST" || method === "PATCH") && body) {
     req["body"] = JSON.stringify(body);
-    if (headers["Content-Type"]) {
-    } else {
+    if (!headers["Content-Type"]) {
       headers["Content-Type"] = "application/json";
     }
   }
@@ -59,7 +69,7 @@ export const apiCall = async (
     requestUrl += `?${encodedQueryString}`;
   }
 
-  if (isAuth) {
+  if (isAuth && accessToken) {
     headers["Authorization"] = `Token ${accessToken}`;
   }
 
