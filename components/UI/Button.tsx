@@ -1,4 +1,9 @@
-import { Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native";
 import React from "react";
 
 interface ButtonProps {
@@ -15,15 +20,13 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`bg-green-600 py-3 px-6 rounded-lg mt-6 w-full flex items-center ${
-        isLoading ? "opacity-50" : ""
-      }`}
+      style={[styles.button, isLoading && styles.buttonDisabled]}
       disabled={isLoading}
     >
       {isLoading ? (
         <ActivityIndicator color="#FFFFFF" />
       ) : (
-        <Text className="text-white text-lg font-semibold">{children}</Text>
+        <Text style={styles.buttonText}>{children}</Text>
       )}
     </TouchableOpacity>
   );
@@ -34,13 +37,39 @@ export const DestructiveButton: React.FC<ButtonProps> = ({
   onPress,
 }) => {
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      className="bg-red-600 py-3 px-6 rounded-lg mt-6 w-full flex items-center"
-    >
-      <Text className="text-white text-lg font-semibold">{children}</Text>
+    <TouchableOpacity onPress={onPress} style={styles.destructiveButton}>
+      <Text style={styles.buttonText}>{children}</Text>
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: "#16a34a",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    marginTop: 24,
+    width: "100%",
+    alignItems: "center",
+  },
+  buttonDisabled: {
+    opacity: 0.5,
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  destructiveButton: {
+    backgroundColor: "#dc2626",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    marginTop: 24,
+    width: "100%",
+    alignItems: "center",
+  },
+});
 
 export default Button;

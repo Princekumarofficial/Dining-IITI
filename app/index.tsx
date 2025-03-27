@@ -1,4 +1,4 @@
-import { Text, Image, ScrollView } from "react-native";
+import { Text, Image, ScrollView, StyleSheet } from "react-native";
 import React from "react";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -11,19 +11,13 @@ const Index = () => {
   const { loggedIn, loading } = globalContext!;
 
   return (
-    <SafeAreaView className="h-full">
+    <SafeAreaView style={styles.safeArea}>
       <ScrollView
-        contentContainerStyle={{
-          height: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        className="h-full flex px-6"
+        contentContainerStyle={styles.scrollViewContent}
+        style={styles.scrollView}
       >
         <Image source={require("@/app/assets/images/iiti-logo.png")} />
-        <Text className="font-DMSans text-2xl font-semibold py-4">
-          Dining IITI
-        </Text>
+        <Text style={styles.title}>Dining IITI</Text>
         {loggedIn ? (
           <Button onPress={() => router.push("/home")} isLoading={loading}>
             <FontAwesome name="home" size={20} color="white" />
@@ -39,5 +33,26 @@ const Index = () => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 24, // px-6 in Tailwind
+  },
+  scrollViewContent: {
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    fontFamily: "DMSans",
+    fontSize: 24, // text-2xl in Tailwind
+    fontWeight: "600", // font-semibold in Tailwind
+    paddingVertical: 16, // py-4 in Tailwind
+  },
+});
 
 export default Index;

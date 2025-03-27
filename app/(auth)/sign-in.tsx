@@ -1,4 +1,4 @@
-import { ScrollView, View, Text, Image } from "react-native";
+import { ScrollView, View, Text, Image, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "@/components/UI/Button";
@@ -39,16 +39,14 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100 mt-4">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="px-4 py-8">
-        <View className="flex items-center">
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.content}>
           <Image
             source={require("@/app/assets/images/iiti-logo.png")}
-            className="w-32 h-36 mb-8"
+            style={styles.logo}
           />
-          <Text className="text-2xl font-bold text-gray-800 mb-6">
-            Log in to Dining IITI
-          </Text>
+          <Text style={styles.title}>Log in to Dining IITI</Text>
 
           <Input
             label="Email"
@@ -76,5 +74,33 @@ const SignIn: React.FC = () => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f3f4f6", // gray-100
+    marginTop: 16, // mt-4
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingHorizontal: 16, // px-4
+    paddingVertical: 32, // py-8
+  },
+  content: {
+    flex: 1,
+    alignItems: "center",
+  },
+  logo: {
+    width: 128, // w-32
+    height: 144, // h-36
+    marginBottom: 32, // mb-8
+  },
+  title: {
+    fontSize: 24, // text-2xl
+    fontWeight: "bold",
+    color: "#1f2937", // text-gray-800
+    marginBottom: 24, // mb-6
+  },
+});
 
 export default SignIn;
