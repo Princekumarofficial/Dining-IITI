@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { Camera, CameraView, BarcodeScanningResult } from "expo-camera";
 import { SplashScreen } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { verifyQR } from "@/helpers/api";
 import { Toast } from "toastify-react-native";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import Button from "./UI/Button";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Log } from "@/types/Logs";
+import Button from "@/components/UI/Button";
 
 const QRScanner: React.FC = () => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [scanned, setScanned] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [lastLog, setLastLog] = useState<Log | null>(null);
+  const [cameraType, setCameraType] = useState<"front" | "back">("back");
   const { loading, setLoading, addLog } = useGlobalContext()!;
 
   useEffect(() => {
@@ -31,6 +40,7 @@ const QRScanner: React.FC = () => {
     verifyQR(data_object).then((res: Log) => {
       res.timestamp = new Date();
       addLog(res);
+      setLastLog(res);
       if (res.success) {
         Toast.success("QR Verification Successful");
         setLoading(false);
@@ -45,6 +55,10 @@ const QRScanner: React.FC = () => {
 
   const onCameraReady = () => {
     SplashScreen.hideAsync();
+  };
+
+  const toggleCamera = () => {
+    setCameraType((prev) => (prev === "back" ? "front" : "back"));
   };
 
   if (hasPermission === null) {
@@ -64,14 +78,12 @@ const QRScanner: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.flexContainer}>
-      {/* Loader */}
       {loading && (
         <View style={styles.loaderContainer}>
           <ActivityIndicator size="large" color="#0000ff" />
         </View>
       )}
 
-      {/* Header */}
       <View style={styles.headerContainer}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>QR Scanner</Text>
@@ -79,19 +91,19 @@ const QRScanner: React.FC = () => {
         </View>
       </View>
 
-      {/* Camera */}
       <View style={styles.cameraContainer}>
         <CameraView
           onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
-          barcodeScannerSettings={{
-            barcodeTypes: ["qr", "pdf417"],
-          }}
+          barcodeScannerSettings={{ barcodeTypes: ["qr", "pdf417"] }}
           style={styles.camera}
           onCameraReady={onCameraReady}
+          facing={cameraType}
         />
+        <TouchableOpacity style={styles.fab} onPress={toggleCamera}>
+          <MaterialIcons name="flip-camera-android" size={30} color="#ffffff" />
+        </TouchableOpacity>
       </View>
 
-      {/* Scan result and actions */}
       {scanned && (
         <View style={styles.scanAgainContainer}>
           <Button
@@ -121,7 +133,7 @@ const QRScanner: React.FC = () => {
                   : styles.failedText,
               ]}
             >
-              Status: {status}
+              Status: {status} - {lastLog?.detail}
             </Text>
           </View>
         </View>
@@ -131,20 +143,9 @@ const QRScanner: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#1f2937",
-    justifyContent: "center",
-  },
-  textCenter: {
-    textAlign: "center",
-    marginTop: 20,
-    color: "#ffffff",
-  },
-  flexContainer: {
-    flex: 1,
-    justifyContent: "center",
-  },
+  container: { flex: 1, backgroundColor: "#1f2937", justifyContent: "center" },
+  textCenter: { textAlign: "center", marginTop: 20, color: "#ffffff" },
+  flexContainer: { flex: 1, justifyContent: "center" },
   loaderContainer: {
     flex: 1,
     height: "100%",
@@ -154,39 +155,26 @@ const styles = StyleSheet.create({
     position: "absolute",
     zIndex: 30,
   },
-  headerContainer: {
-    padding: 16,
-    position: "absolute",
-    top: 8,
-    width: "100%",
-  },
+  headerContainer: { padding: 16, position: "absolute", top: 8, width: "100%" },
   header: {
     backgroundColor: "#ffffff",
     padding: 8,
     alignItems: "center",
     borderRadius: 12,
   },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
+  headerTitle: { fontSize: 18, fontWeight: "bold", textAlign: "center" },
+  headerSubtitle: { fontSize: 12, textAlign: "center" },
+  cameraContainer: { flex: 1 },
+  camera: { flex: 1, borderRadius: 12, overflow: "hidden" },
+  fab: {
+    position: "absolute",
+    top: 16,
+    right: 16,
+    backgroundColor: "#1f2937",
+    padding: 12,
+    borderRadius: 30,
   },
-  headerSubtitle: {
-    fontSize: 12,
-    textAlign: "center",
-  },
-  cameraContainer: {
-    flex: 1,
-  },
-  camera: {
-    flex: 1,
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  scanAgainContainer: {
-    marginVertical: 16,
-    paddingHorizontal: 16,
-  },
+  scanAgainContainer: { marginVertical: 16, paddingHorizontal: 16 },
   statusContainer: {
     position: "absolute",
     bottom: 80,
@@ -195,27 +183,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     zIndex: 40,
   },
-  statusBox: {
-    backgroundColor: "#ffffff",
-    padding: 16,
-    borderRadius: 12,
-  },
-  successBox: {
-    backgroundColor: "#d1fae5",
-  },
-  failedBox: {
-    backgroundColor: "#fee2e2",
-  },
-  statusText: {
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  successText: {
-    color: "#047857",
-  },
-  failedText: {
-    color: "#b91c1c",
-  },
+  statusBox: { backgroundColor: "#ffffff", padding: 16, borderRadius: 12 },
+  successBox: { backgroundColor: "#d1fae5" },
+  failedBox: { backgroundColor: "#fee2e2" },
+  statusText: { fontSize: 18, fontWeight: "600" },
+  successText: { color: "#047857" },
+  failedText: { color: "#b91c1c" },
 });
 
 export default QRScanner;

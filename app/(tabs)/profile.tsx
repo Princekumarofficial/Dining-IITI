@@ -8,40 +8,47 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import { formatDateTime } from "@/utils/datetime";
 import { DestructiveButton } from "@/components/UI/Button";
 import Toast from "toastify-react-native";
+import { Platform } from "react-native";
 
 const Profile = () => {
   const globalContext = useGlobalContext()!;
   const { user, setUser, loading, setLoading, setLoggedIn } = globalContext;
 
   const handleLogout = async () => {
-    Alert.alert(
-      "Logout",
-      "Are you sure you want to log out?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Logout",
-          onPress: async () => {
-            setLoading(true);
-            const res = await logout();
-            if (res) {
-              setLoggedIn(false);
-              setUser(null);
-              Toast.success("Logged Out successfully");
-              router.push("/");
-            } else {
-              Toast.error("Failed to logout");
-            }
-            setLoading(false);
+    if (Platform.OS === "web") {
+      const confirmLogout = window.confirm("Are you sure you want to log out?");
+      if (!confirmLogout) return;
+    } else {
+      Alert.alert(
+        "Logout",
+        "Are you sure you want to log out?",
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Logout",
+            onPress: async () => await performLogout(),
+            style: "destructive",
           },
-          style: "destructive",
-        },
-      ],
-      { cancelable: true }
-    );
+        ],
+        { cancelable: true }
+      );
+      return;
+    }
+    await performLogout();
+  };
+
+  const performLogout = async () => {
+    setLoading(true);
+    const res = await logout();
+    if (res) {
+      setLoggedIn(false);
+      setUser(null);
+      Toast.success("Logged Out successfully");
+      router.push("/");
+    } else {
+      Toast.error("Failed to logout");
+    }
+    setLoading(false);
   };
 
   return (
