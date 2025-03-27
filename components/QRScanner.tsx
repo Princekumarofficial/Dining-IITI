@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { Camera, CameraView, BarcodeScanningResult } from "expo-camera";
 import { SplashScreen } from "expo-router";
@@ -33,7 +34,7 @@ const QRScanner: React.FC = () => {
     })();
   }, []);
 
-  const handleBarcodeScanned = ({ type, data }: BarcodeScanningResult) => {
+  const handleBarcodeScanned = ({ data }: BarcodeScanningResult) => {
     setLoading(true);
     setScanned(true);
     const data_object = { id: data };
@@ -117,24 +118,48 @@ const QRScanner: React.FC = () => {
         </View>
       )}
 
-      {status && (
-        <View style={styles.statusContainer}>
-          <View
-            style={[
-              styles.statusBox,
-              status === "Successful" ? styles.successBox : styles.failedBox,
-            ]}
-          >
-            <Text
+      {lastLog && (
+        <View>
+          <View style={styles.statusContainer}>
+            <View
               style={[
-                styles.statusText,
-                status === "Successful"
-                  ? styles.successText
-                  : styles.failedText,
+                styles.statusBox,
+                status === "Successful" ? styles.successBox : styles.failedBox,
               ]}
             >
-              Status: {status} - {lastLog?.detail}
-            </Text>
+              <Text
+                style={[
+                  styles.statusText,
+                  status === "Successful"
+                    ? styles.successText
+                    : styles.failedText,
+                ]}
+              >
+                Status: {status} - {lastLog?.detail}
+              </Text>
+            </View>
+            <View style={styles.studentDetailContainer}>
+              <View style={styles.studentPhotoContainer}>
+                {lastLog.student.photo ? (
+                  <Image
+                    source={{ uri: lastLog.student.photo }}
+                    style={{ width: 80, height: 80, borderRadius: 40 }}
+                  />
+                ) : (
+                  <View style={styles.photoPlaceholder}>
+                    <Text style={styles.photoText}>Photo</Text>
+                  </View>
+                )}
+              </View>
+              <View style={styles.studentInfoContainer}>
+                <Text style={styles.studentName}>
+                  Name: {lastLog.student.name || "N/A"}
+                </Text>
+                <Text style={styles.studentEmail}>
+                  Email: {lastLog.student.email || "N/A"}
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
       )}
@@ -143,6 +168,31 @@ const QRScanner: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  studentDetailContainer: {
+    flexDirection: "row",
+    padding: 16,
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    margin: 16,
+  },
+  studentPhotoContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  photoPlaceholder: {
+    width: 80,
+    height: 80,
+    backgroundColor: "#e5e7eb",
+    borderRadius: 40,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  photoText: { color: "#6b7280", fontSize: 12 },
+  studentInfoContainer: { flex: 2, paddingLeft: 16 },
+  studentName: { fontSize: 16, fontWeight: "bold", color: "#1f2937" },
+  studentID: { fontSize: 14, color: "#4b5563", marginTop: 4 },
+  studentEmail: { fontSize: 14, color: "#4b5563", marginTop: 4 },
   container: { flex: 1, backgroundColor: "#1f2937", justifyContent: "center" },
   textCenter: { textAlign: "center", marginTop: 20, color: "#ffffff" },
   flexContainer: { flex: 1, justifyContent: "center" },
