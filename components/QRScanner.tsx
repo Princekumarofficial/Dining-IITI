@@ -59,7 +59,7 @@ const QRScanner: React.FC = () => {
   };
 
   const toggleCamera = () => {
-    setCameraType((prev) => (prev === "back" ? "front" : "back"));
+    setCameraType((prev) => (prev == "back" ? "front" : "back"));
   };
 
   if (hasPermission === null) {
