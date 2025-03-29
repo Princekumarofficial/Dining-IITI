@@ -67,14 +67,14 @@ const QRScanner: React.FC = () => {
     setCameraType((prev) => (prev == "back" ? "front" : "back"));
   };
 
-  if (hasPermission === null) {
+  if (Platform.OS !== "web" && hasPermission === null) {
     return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.textCenter}>Requesting camera permission...</Text>
       </SafeAreaView>
     );
   }
-  if (hasPermission === false) {
+  if (Platform.OS !== "web" && hasPermission === false) {
     return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.textCenter}>No access to camera</Text>
