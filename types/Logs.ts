@@ -4,7 +4,6 @@ export interface Student {
   id: number;
   email: string;
   name?: string;
-  photo?: string;
 }
 
 export interface Log {
@@ -13,5 +12,4 @@ export interface Log {
   success: boolean;
   detail: string;
   mess_card: MessCard;
-  student: Student;
 }

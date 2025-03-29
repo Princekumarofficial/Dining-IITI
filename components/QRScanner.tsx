@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  Platform,
 } from "react-native";
 import { Camera, CameraView, BarcodeScanningResult } from "expo-camera";
 import { SplashScreen } from "expo-router";
@@ -16,6 +17,7 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Log } from "@/types/Logs";
 import Button from "@/components/UI/Button";
+import Input from "./UI/Input";
 
 const QRScanner: React.FC = () => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -24,6 +26,7 @@ const QRScanner: React.FC = () => {
   const [lastLog, setLastLog] = useState<Log | null>(null);
   const [cameraType, setCameraType] = useState<"front" | "back">("back");
   const { loading, setLoading, addLog } = useGlobalContext()!;
+  const [code, setCode] = useState<string | null>(null);
 
   useEffect(() => {
     SplashScreen.preventAutoHideAsync();
@@ -34,7 +37,9 @@ const QRScanner: React.FC = () => {
     })();
   }, []);
 
-  const handleBarcodeScanned = ({ data }: BarcodeScanningResult) => {
+  const handleBarcodeScanned = ({
+    data,
+  }: BarcodeScanningResult | { data: string }) => {
     setLoading(true);
     setScanned(true);
     const data_object = { id: data };
@@ -93,16 +98,38 @@ const QRScanner: React.FC = () => {
       </View>
 
       <View style={styles.cameraContainer}>
-        <CameraView
-          onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
-          barcodeScannerSettings={{ barcodeTypes: ["qr", "pdf417"] }}
-          style={styles.camera}
-          onCameraReady={onCameraReady}
-          facing={cameraType}
-        />
-        <TouchableOpacity style={styles.fab} onPress={toggleCamera}>
-          <MaterialIcons name="flip-camera-android" size={30} color="#ffffff" />
-        </TouchableOpacity>
+        {Platform.OS === "web" ? (
+          <View style={{ marginTop: 120, marginHorizontal: 16 }}>
+            <Input
+              label="Enter QR Code"
+              placeholder="Enter QR Code"
+              value={code || ""}
+              onChangeText={(value) => setCode(value)}
+              onSubmitEditing={() => {
+                if (code) {
+                  handleBarcodeScanned({ data: code });
+                }
+              }}
+            />
+          </View>
+        ) : (
+          <>
+            <CameraView
+              onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
+              barcodeScannerSettings={{ barcodeTypes: ["qr", "pdf417"] }}
+              style={styles.camera}
+              onCameraReady={onCameraReady}
+              facing={cameraType}
+            />
+            <TouchableOpacity style={styles.fab} onPress={toggleCamera}>
+              <MaterialIcons
+                name="flip-camera-android"
+                size={30}
+                color="#ffffff"
+              />
+            </TouchableOpacity>
+          </>
+        )}
       </View>
 
       {scanned && (
@@ -140,23 +167,26 @@ const QRScanner: React.FC = () => {
             </View>
             <View style={styles.studentDetailContainer}>
               <View style={styles.studentPhotoContainer}>
-                {lastLog.student.photo ? (
-                  <Image
-                    source={{ uri: lastLog.student.photo }}
-                    style={{ width: 80, height: 80, borderRadius: 40 }}
-                  />
-                ) : (
-                  <View style={styles.photoPlaceholder}>
-                    <Text style={styles.photoText}>Photo</Text>
-                  </View>
-                )}
+                <Image
+                  source={{
+                    uri: `${"https://diningfee.iiti.ac.in"}${
+                      lastLog.mess_card.student.photo
+                    }`,
+                  }}
+                  style={{
+                    width: 200,
+                    height: 200,
+                    borderRadius: 40,
+                    backgroundColor: "#e5e7eb",
+                  }}
+                />
               </View>
               <View style={styles.studentInfoContainer}>
                 <Text style={styles.studentName}>
-                  Name: {lastLog.student.name || "N/A"}
+                  Name: {lastLog.mess_card.student.name || "N/A"}
                 </Text>
                 <Text style={styles.studentEmail}>
-                  Email: {lastLog.student.email || "N/A"}
+                  Email: {lastLog.mess_card.student.email || "N/A"}
                 </Text>
               </View>
             </View>

@@ -2,6 +2,7 @@ import qs from "qs";
 import * as SecureStore from "expo-secure-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BACKEND } from "@/constants/config";
+import { Platform } from "react-native";
 
 export const BASE_URL = `${API_BACKEND}/api/v1`;
 
@@ -17,7 +18,7 @@ interface ApiCallOptions {
 }
 
 const getAccessToken = async (): Promise<string | null> => {
-  if (typeof document !== "undefined") {
+  if (Platform.OS === "web") {
     // Web environment
     return await AsyncStorage.getItem("accessToken");
   } else {

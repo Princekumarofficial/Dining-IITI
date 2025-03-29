@@ -31,6 +31,7 @@ export interface MessCard {
     id: number;
     email: string;
     name: string;
+    photo: string;
   };
   qr_code: string;
 }
