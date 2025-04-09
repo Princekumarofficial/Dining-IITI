@@ -1,8 +1,25 @@
-import React from "react";
-import { Tabs } from "expo-router";
+import React, { useEffect } from "react";
+import { router, Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { isAuthenticated } from "@/helpers/auth";
+import { Toast } from "toastify-react-native";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 const TabsLayout = () => {
+  const { updateAuth } = useGlobalContext()!;
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const auth = await isAuthenticated();
+      if (!auth) {
+        Toast.error("You have been logged out");
+        updateAuth();
+        router.replace("/(auth)/sign-in");
+      }
+    };
+    checkAuth();
+  }, []);
+
   return (
     <>
       <Tabs
