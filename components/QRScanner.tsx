@@ -50,10 +50,12 @@ const QRScanner: React.FC = () => {
       if (res.success) {
         Toast.success("QR Verification Successful");
         setLoading(false);
+        setCode(null);
         setStatus("Successful");
       } else {
         Toast.error("QR Verification Failed");
         setLoading(false);
+        setCode(null);
         setStatus("Failed");
       }
     });
