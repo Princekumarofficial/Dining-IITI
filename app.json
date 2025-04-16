@@ -5,7 +5,7 @@
     "scheme": "Dining-IITI",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./app/assets/images/iiti-logo.jpg",
+    "icon": "./app/assets/images/iiti-logo.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./app/assets/images/iiti-logo.png",

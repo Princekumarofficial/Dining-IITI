@@ -4,11 +4,17 @@ import {
   TextInput,
   TextInputProps,
   StyleSheet,
+  NativeSyntheticEvent,
+  TextInputSubmitEditingEventData,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 interface InputProps extends TextInputProps {
   label: string;
+  shouldRefocus?: boolean;
+  onSubmitEditing?: (
+    e: NativeSyntheticEvent<TextInputSubmitEditingEventData>
+  ) => void;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -17,14 +23,35 @@ const Input: React.FC<InputProps> = ({
   onChangeText,
   placeholder,
   secureTextEntry,
+  shouldRefocus,
+  onSubmitEditing,
   ...rest
 }) => {
   const [isFocused, setIsFocused] = useState(false);
+  const [refocusTrigger, setRefocusTrigger] = useState(false);
+  const inputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    if ((shouldRefocus || refocusTrigger) && inputRef.current) {
+      inputRef.current.focus();
+      setRefocusTrigger(false);
+    }
+  }, [shouldRefocus, refocusTrigger]);
+
+  const handleSubmitEditing = (
+    e: NativeSyntheticEvent<TextInputSubmitEditingEventData>
+  ) => {
+    if (onSubmitEditing) {
+      onSubmitEditing(e);
+    }
+    setRefocusTrigger(true);
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
+        ref={inputRef}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
@@ -36,6 +63,7 @@ const Input: React.FC<InputProps> = ({
         ]}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
+        onSubmitEditing={handleSubmitEditing}
         {...rest}
       />
     </View>
@@ -61,10 +89,10 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   inputFocused: {
-    borderColor: "#3B82F6", // blue-500
+    borderColor: "#3B82F6",
   },
   inputBlurred: {
-    borderColor: "#D1D5DB", // gray-300
+    borderColor: "#D1D5DB",
   },
 });
 

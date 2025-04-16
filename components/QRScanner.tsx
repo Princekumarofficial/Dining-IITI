@@ -50,10 +50,12 @@ const QRScanner: React.FC = () => {
       if (res.success) {
         Toast.success("QR Verification Successful");
         setLoading(false);
+        setCode(null);
         setStatus("Successful");
       } else {
         Toast.error("QR Verification Failed");
         setLoading(false);
+        setCode(null);
         setStatus("Failed");
       }
     });
@@ -110,6 +112,7 @@ const QRScanner: React.FC = () => {
                   handleBarcodeScanned({ data: code });
                 }
               }}
+              shouldRefocus
             />
           </View>
         ) : (
@@ -132,7 +135,7 @@ const QRScanner: React.FC = () => {
         )}
       </View>
 
-      {scanned && (
+      {scanned && Platform.OS != "web" && (
         <View style={styles.scanAgainContainer}>
           <Button
             onPress={() => {
