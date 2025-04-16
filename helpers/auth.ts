@@ -63,7 +63,9 @@ export const isAuthenticated = async () => {
   if (!accessToken) return false;
 
   try {
-    const res = await apiCall("/auth/is_authenticated");
+    const res = await apiCall("/auth/is_authenticated", {
+      recieveResponse: false,
+    });
     if (res) return true;
     await storage.deleteItem("accessToken");
     return false;

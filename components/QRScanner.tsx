@@ -112,6 +112,7 @@ const QRScanner: React.FC = () => {
                   handleBarcodeScanned({ data: code });
                 }
               }}
+              shouldRefocus
             />
           </View>
         ) : (
@@ -134,7 +135,7 @@ const QRScanner: React.FC = () => {
         )}
       </View>
 
-      {scanned && (
+      {scanned && Platform.OS != "web" && (
         <View style={styles.scanAgainContainer}>
           <Button
             onPress={() => {
