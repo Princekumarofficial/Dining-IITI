@@ -71,15 +71,19 @@ const QRScanner: React.FC = () => {
 
   if (Platform.OS !== "web" && hasPermission === null) {
     return (
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.textCenter}>Requesting camera permission...</Text>
+      <SafeAreaView>
+        <View style={styles.container}>
+          <Text style={styles.textCenter}>Requesting camera permission...</Text>
+        </View>
       </SafeAreaView>
     );
   }
   if (Platform.OS !== "web" && hasPermission === false) {
     return (
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.textCenter}>No access to camera</Text>
+      <SafeAreaView>
+        <View style={styles.container}>
+          <Text style={styles.textCenter}>No access to camera</Text>
+        </View>
       </SafeAreaView>
     );
   }
@@ -106,7 +110,7 @@ const QRScanner: React.FC = () => {
               label="Enter QR Code"
               placeholder="Enter QR Code"
               value={code || ""}
-              onChangeText={(value) => setCode(value)}
+              onChangeText={(value: string) => setCode(value)}
               onSubmitEditing={() => {
                 if (code) {
                   handleBarcodeScanned({ data: code });
@@ -141,6 +145,7 @@ const QRScanner: React.FC = () => {
             onPress={() => {
               setScanned(false);
               setStatus(null);
+              setLastLog(null);
             }}
           >
             Tap to Scan Again
@@ -164,6 +169,8 @@ const QRScanner: React.FC = () => {
                     ? styles.successText
                     : styles.failedText,
                 ]}
+                numberOfLines={2}
+                ellipsizeMode="tail"
               >
                 Status: {status} - {lastLog?.detail}
               </Text>
@@ -176,19 +183,15 @@ const QRScanner: React.FC = () => {
                       lastLog.mess_card.student.photo
                     }`,
                   }}
-                  style={{
-                    width: 200,
-                    height: 200,
-                    borderRadius: 40,
-                    backgroundColor: "#e5e7eb",
-                  }}
+                  style={styles.studentPhoto}
+                  resizeMode="cover"
                 />
               </View>
               <View style={styles.studentInfoContainer}>
-                <Text style={styles.studentName}>
+                <Text style={styles.studentName} numberOfLines={1}>
                   Name: {lastLog.mess_card.student.name || "N/A"}
                 </Text>
-                <Text style={styles.studentEmail}>
+                <Text style={styles.studentEmail} numberOfLines={2}>
                   Email: {lastLog.mess_card.student.email || "N/A"}
                 </Text>
               </View>
@@ -202,30 +205,45 @@ const QRScanner: React.FC = () => {
 
 const styles = StyleSheet.create({
   studentDetailContainer: {
-    flexDirection: "row",
+    flexDirection: Platform.OS === "web" ? "row" : "column",
     padding: 16,
     backgroundColor: "#ffffff",
     borderRadius: 12,
     margin: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   studentPhotoContainer: {
-    flex: 1,
+    flex: Platform.OS === "web" ? 1 : undefined,
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: Platform.OS === "web" ? 0 : 16,
   },
-  photoPlaceholder: {
-    width: 80,
-    height: 80,
+  studentPhoto: {
+    width: Platform.OS === "web" ? 300 : 120,
+    height: Platform.OS === "web" ? 300 : 120,
+    borderRadius: Platform.OS === "web" ? 30 : 25,
     backgroundColor: "#e5e7eb",
-    borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
   },
-  photoText: { color: "#6b7280", fontSize: 12 },
-  studentInfoContainer: { flex: 2, paddingLeft: 16 },
-  studentName: { fontSize: 16, fontWeight: "bold", color: "#1f2937" },
-  studentID: { fontSize: 14, color: "#4b5563", marginTop: 4 },
-  studentEmail: { fontSize: 14, color: "#4b5563", marginTop: 4 },
+  studentInfoContainer: {
+    flex: Platform.OS === "web" ? 2 : undefined,
+    paddingLeft: Platform.OS === "web" ? 16 : 0,
+    justifyContent: "center",
+  },
+  studentName: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#1f2937",
+    marginBottom: 8,
+  },
+  studentEmail: {
+    fontSize: 14,
+    color: "#4b5563",
+    flexWrap: "wrap",
+  },
   container: { flex: 1, backgroundColor: "#1f2937", justifyContent: "center" },
   textCenter: { textAlign: "center", marginTop: 20, color: "#ffffff" },
   flexContainer: { flex: 1, justifyContent: "center" },
@@ -260,16 +278,32 @@ const styles = StyleSheet.create({
   scanAgainContainer: { marginVertical: 16, paddingHorizontal: 16 },
   statusContainer: {
     position: "absolute",
-    bottom: 80,
+    bottom: Platform.OS === "web" ? 16 : 80,
     left: 0,
     right: 0,
     paddingHorizontal: 16,
     zIndex: 40,
+    width: "100%",
+    maxWidth: "100%",
+    alignSelf: "center",
   },
-  statusBox: { backgroundColor: "#ffffff", padding: 16, borderRadius: 12 },
+  statusBox: {
+    backgroundColor: "#ffffff",
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
   successBox: { backgroundColor: "#d1fae5" },
   failedBox: { backgroundColor: "#fee2e2" },
-  statusText: { fontSize: 18, fontWeight: "600" },
+  statusText: {
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+  },
   successText: { color: "#047857" },
   failedText: { color: "#b91c1c" },
 });
